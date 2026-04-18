@@ -27,22 +27,12 @@ struct Statistics {
 
     double draw_rate() const { return double(draws) / total(); }
 
-    // for sorting according to draw rate
+    // for sorting according to how many potential double kills occured
 
     bool operator<(const Statistics &other) const {
-        if (draw_rate() == other.draw_rate()) {
-            if (total() == other.total()) {
-                if (wins == other.wins) {
-                    if (draws == other.draws) {
-                        return losses > other.losses;
-                    }
-                    return draws > other.draws;
-                }
-                return wins > other.wins;
-            }
-            return total() > other.total();
-        }
-        return draw_rate() < other.draw_rate();
+        const auto dk = std::min(wins, losses);
+        const auto other_dk = std::min(other.wins, other.losses);
+        return dk > other_dk || (dk == other_dk && draws < other.draws);
     }
 
     size_t total() const { return wins + draws + losses; }
